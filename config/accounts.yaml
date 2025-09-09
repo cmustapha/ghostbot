@@ -1,0 +1,9 @@
+accounts:
+  - name: ghost01
+    platform: tumblr
+    cookies: cookies/tumblr_ghost01.json
+    user_agent: Mozilla/5.0
+    proxy: 195.83.101.34:3128
+    ip: 195.83.101.34
+    sim_id: sim03
+    email: elisa.vallot@mail.tm

@@ -1,0 +1,13 @@
+platforms:
+  tumblr:
+    delay_between_posts: [60, 180]
+    max_posts_per_day: 5
+  reddit:
+    delay_between_posts: [300, 600]
+    max_posts_per_day: 3
+  x:
+    delay_between_posts: [90, 300]
+    max_posts_per_day: 4
+general:
+  headless: true
+  log_level: info
