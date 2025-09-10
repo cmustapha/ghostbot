@@ -1,0 +1,72 @@
+[
+  {
+    "domain": ".www.tumblr.com",
+    "expiry": 1789032149,
+    "httpOnly": true,
+    "name": "pfu",
+    "path": "/",
+    "sameSite": "None",
+    "secure": true,
+    "value": "511727186"
+  },
+  {
+    "domain": ".www.tumblr.com",
+    "expiry": 1789032149,
+    "httpOnly": true,
+    "name": "sid",
+    "path": "/",
+    "sameSite": "None",
+    "secure": true,
+    "value": "aLLp99XefbUM1HjhkVmR4ykfw6Yu5wCG8L1lRU6RqhljVLBpEg.a5YvwG7dJFbTiDtjkcR6njoRD0xyqKN1jzIvPw3ywT0zX0Ldvq"
+  },
+  {
+    "domain": ".tumblr.com",
+    "expiry": 1789032149,
+    "httpOnly": false,
+    "name": "cl_pref",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": false,
+    "value": "block"
+  },
+  {
+    "domain": ".tumblr.com",
+    "expiry": 1789032149,
+    "httpOnly": false,
+    "name": "logged_in",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": false,
+    "value": "1"
+  },
+  {
+    "domain": ".tumblr.com",
+    "expiry": 1789032149,
+    "httpOnly": false,
+    "name": "language",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": false,
+    "value": "%2Cfr_FR"
+  },
+  {
+    "domain": ".tumblr.com",
+    "expiry": 1789032126,
+    "httpOnly": true,
+    "name": "tmgioct",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": true,
+    "value": "985738960b9332bdadeb2633"
+  },
+  {
+    "domain": "www.tumblr.com",
+    "expiry": 1789032125,
+    "httpOnly": false,
+    "name": "tz",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": false,
+    "value": "Africa%2FCasablanca"
+  }
+]
