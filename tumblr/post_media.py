@@ -140,26 +140,41 @@ def post_tumblr_photo(
         log("⚠️  Aucune prévisualisation détectée (sélecteur peut changer). On continue.")
 
 
+
     # Saisir la légende
     caption_box = None
     selectors_to_try = [
         # --- textarea explicites en priorité ---
-        "textarea[aria-label='Éditeur de tags']",
-        "textarea[aria-label*='Éditeur']",
-        "textarea.mbROR",
-        "textarea[role='textbox']",
+        #"textarea[aria-label='Éditeur de tags']",
+        "p.block-editor-rich-text__editable.rich-text[contenteditable='true'][role='document']",
+        "p[role='document'][contenteditable='true'][aria-multiline='true']",
+        "p[contenteditable='true'][data-type='core/paragraph']",
+        "p[contenteditable='true'][data-custom-placeholder='true']",
+        "p[aria-label^='Empty block']",
+        "p.block-editor-block-list__block[contenteditable='true']",
+        # Parfois le placeholder est dans un span enfant : on cible quand même le p parent
+        "p[contenteditable='true'] span[data-rich-text-placeholder]",  # on match l'enfant; on remontera avec .find_element(...) si besoin
 
-        # --- contenteditable (tes sélecteurs d'origine + variantes) ---
-        "div[contenteditable='true'][aria-label*='Éditeur de tags']",  # S'il y a une légende en français
-        "div[contenteditable='true'][aria-label*='caption']",          # S'il y a une légende en anglais
-        "div[contenteditable='true'][aria-placeholder*='légende']",    # si c'est un placeholder
-        "div[contenteditable='true'][data-testid='caption-editor'] div[contenteditable='true']", # ton sélecteur d'origine
-        "div.notranslate.public-DraftEditor-content",                  # un sélecteur qui a marché dans le passé
-        "//div[@role='textbox' and @contenteditable='true']",          # un XPath générique
+        # --- XPATH équivalents (fallbacks) ---
+        "//p[@role='document' and @contenteditable='true' and @aria-multiline='true']",
+        "//p[contains(@class,'block-editor-rich-text__editable') and @contenteditable='true']",
+        "//p[@data-type='core/paragraph' and @contenteditable='true']",
+        "//p[@contenteditable='true' and @data-custom-placeholder='true']",
+        "//p[starts-with(@aria-label,'Empty block') and @contenteditable='true']",  "p.block-editor-rich-text__editable.rich-text[contenteditable='true'][role='document']",
+        "p[role='document'][contenteditable='true'][aria-multiline='true']",
+        "p[contenteditable='true'][data-type='core/paragraph']",
+        "p[contenteditable='true'][data-custom-placeholder='true']",
+        "p[aria-label^='Empty block']",
+        "p.block-editor-block-list__block[contenteditable='true']",
+        # Parfois le placeholder est dans un span enfant : on cible quand même le p parent
+        "p[contenteditable='true'] span[data-rich-text-placeholder]",  # on match l'enfant; on remontera avec .find_element(...) si besoin
 
-        # --- XPath textarea ---
-        "//textarea[@aria-label='Éditeur de tags']",
-        "//textarea[contains(@aria-label,'Éditeur')]",
+        # --- XPATH équivalents (fallbacks) ---
+        "//p[@role='document' and @contenteditable='true' and @aria-multiline='true']",
+        "//p[contains(@class,'block-editor-rich-text__editable') and @contenteditable='true']",
+        "//p[@data-type='core/paragraph' and @contenteditable='true']",
+        "//p[@contenteditable='true' and @data-custom-placeholder='true']",
+        "//p[starts-with(@aria-label,'Empty block') and @contenteditable='true']",
     ]
 
     log("🔎 Recherche de la zone de légende...")
@@ -178,6 +193,7 @@ def post_tumblr_photo(
         except TimeoutException:
             log(f"❌ Sélecteur '{selector}' a échoué.")
             continue
+    
 
     if caption_box and caption:
         log("✍️ Saisie de la légende…")
@@ -208,52 +224,13 @@ def post_tumblr_photo(
         except Exception as e:
             log(f"ℹ️ send_keys a échoué: {e}")
 
-        # Tentative 2 : fallback JS (utile pour React/controlled)
-        if not ok:
-            try:
-                driver.execute_script("""
-                    const el = arguments[0];
-                    const val = arguments[1];
-                    try { el.focus(); } catch(e) {}
-                    // setter compatible React
-                    const proto = Object.getPrototypeOf(el);
-                    const desc = Object.getOwnPropertyDescriptor(proto, 'value');
-                    if (desc && desc.set) desc.set.call(el, val); else el.value = val;
-                    el.dispatchEvent(new Event('input', { bubbles: true }));
-                    el.dispatchEvent(new Event('change', { bubbles: true }));
-                """, caption_box, caption)
-                ok = True
-            except Exception as e:
-                log(f"ℹ️ JS fallback a échoué: {e}")
-
-        # Tentative 3 : si c'est un contenteditable pur, injecter via execCommand
-        if not ok and (caption_box.get_attribute("contenteditable") or "").lower() == "true":
-            try:
-                driver.execute_script("""
-                    const el = arguments[0], text = arguments[1];
-                    el.focus();
-                    document.execCommand('selectAll', false, null);
-                    document.execCommand('delete', false, null);
-                    document.execCommand('insertText', false, text);
-                    el.dispatchEvent(new Event('input', { bubbles: true }));
-                """, caption_box, caption)
-                ok = True
-            except Exception as e:
-                log(f"ℹ️ execCommand a échoué: {e}")
-
-        if ok:
-            log("✅ Légende saisie avec succès.")
-        else:
-            log("⚠️ Impossible d’écrire la légende malgré les tentatives.")
-    else:
-        log("⚠️ Zone de légende non trouvée ou vide — on publie sans texte.")
-
-        
+          
+    
 
     # Ajouter des tags (si UI visible)
     if tags:
         try:
-            tag_zone = wait_css(driver, "[data-testid='post-form-tags'] input", timeout=10)
+            tag_zone = wait_css(driver, "textarea[aria-label='Éditeur de tags']", timeout=10)
             for t in tags:
                 t = t.strip().replace("#", "")
                 if not t:

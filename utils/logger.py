@@ -8,3 +8,6 @@ def get_logger(name="ghost"):
         handler.setFormatter(logging.Formatter("[%(asctime)s] %(levelname)s: %(message)s"))
         logger.addHandler(handler)
     return logger
+
+def pause_for_debug():
+    input("⏸ Pause debug — appuie sur Entrée pour continuer...")
